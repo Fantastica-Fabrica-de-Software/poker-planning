@@ -2,7 +2,7 @@
   "name": "planning-poker",
   "version": "1.0.0",
   "description": "Socket based planning poker",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "postinstall": "npm run build",
