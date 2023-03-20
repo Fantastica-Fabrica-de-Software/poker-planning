@@ -67,13 +67,19 @@ export default {
     transition-duration: 1s;
 }
 
-.card> {
-    font-size: 32px;
+.card {
+    transition-duration: 0.3s;
+}
+
+.card.active {
+    background-color: #fa6800 !important;
 }
 
 .card:hover {
-    transition-duration: 0.1s;
+    transition-duration: 0.3s;
     transform: translate(0, -15px);
+    cursor: pointer;
+    background-color: #fa6800 !important;
 }
 
 .active {

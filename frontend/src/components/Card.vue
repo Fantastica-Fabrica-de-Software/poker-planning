@@ -1,6 +1,5 @@
 <template>
-  <c-box :backgroundColor="active ? 'white' : 'blue.100'" animationDuration="1s" :class="active ? 'card' : 'card active'"
-    w="90px" shadow="md" rounded="lg" p="5">
+  <c-box animationDuration="1s" :class="active ? 'card' : 'card active'" w="90px" shadow="md" rounded="lg" p="5">
     <c-text paddingY="30px" fontSize="3xl" fontWeight="bold" align="center">
       {{ value }}
     </c-text>
