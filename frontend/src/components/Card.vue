@@ -1,7 +1,7 @@
 <template>
   <c-box :backgroundColor="active ? 'white' : 'blue.100'" animationDuration="1s" :class="active ? 'card' : 'card active'"
     w="90px" shadow="md" rounded="lg" p="5">
-    <c-text color paddingY="30px" fontSize="3xl" fontWeight="bold" align="center">
+    <c-text paddingY="30px" fontSize="3xl" fontWeight="bold" align="center">
       {{ value }}
     </c-text>
   </c-box>
@@ -25,7 +25,7 @@ export default Vue.extend({
 }
 
 .card {
-  background-color: #073293;
+  background-color: #073293 !important;
   color: #fff;
   transition-duration: 0.2s;
   border-radius: 10px;
