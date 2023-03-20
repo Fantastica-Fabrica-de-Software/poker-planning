@@ -3,11 +3,11 @@
     <c-text :color="$mode('white.500','gray.100')" fontSize="3xl" fontWeight="bold">Planning Poker</c-text>
     <form @submit="joinRoom">
       <c-form-control is-required marginY="1em">
-        <c-form-label for="roomName">Room name</c-form-label>
+        <c-form-label for="roomName" marginY="1em">Room name</c-form-label>
         <c-input
           id="roomName"
           v-model="roomNumber"
-          placeholder="Just make one up"
+          placeholder="Enter room name"
           type="text"
         />
       </c-form-control>

@@ -36,6 +36,7 @@ export default Vue.extend({
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #F7F8FD !important;
 }
 
 header {

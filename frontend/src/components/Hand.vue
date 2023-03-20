@@ -1,30 +1,17 @@
 <template>
     <div class="handContainer">
         <div class="handBts">
-            <c-button @click="pickUp">Pick up card</c-button>
-            <c-button @click="flipCard">
-                <template v-if="me.hidden == true">
-                    Show
-                </template>
-                <template v-else>
-                    Hide
-                </template>
-                card
-            </c-button>
-            <c-button @click="flipAll">Flip all cards</c-button>
-            <c-button @click="clearTable">Clear table</c-button>
+            <c-button @click="pickUp">Remove card</c-button>
+            <c-button @click="flipAll">Show cards</c-button>
+            <c-button @click="clearTable">New table</c-button>
         </div>
         <div class="hand">
-            <Card v-for="(card, index) in $store.getters.deck"
-                v-bind:key="index"
-                v-bind:value="card"
-                v-bind:active="index != me.card"
-                @click.native="pickCard(index)"
-            ></Card>
+            <Card v-for="(card, index) in $store.getters.deck" v-bind:key="index" v-bind:value="card"
+                v-bind:active="index != me.card" @click.native="pickCard(index)"></Card>
         </div>
     </div>
 </template>
-<script lang='ts'>
+<script>
 import Card from './Card.vue';
 import { CButton } from "@chakra-ui/vue"
 
@@ -41,7 +28,7 @@ export default {
         },
     },
     methods: {
-        pickCard(index:number) {
+        pickCard(index) {
             this.$socket.emit('pickCard', index)
         },
         pickUp() {
@@ -67,31 +54,39 @@ export default {
 }
 
 .handBts {
-  display: flex;
-  width: 100%;
-  justify-content: space-evenly;
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    padding: 0px 30vw;
 }
 
 .hand {
     display: flex;
     justify-content: space-evenly;
+    padding: 0px 20vw;
     transition-duration: 1s;
 }
-.card:hover {
-    transition-duration: 0.1s;
-    transform: translate(0,-15px);
-}
-.active {
-    transform: translate(0,-15px);
-}
-.active::before {
-  content: '';
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  border-radius: 10px;
-  width: calc(100% - 6px);
-  height: 10px;
+
+.card> {
+    font-size: 32px;
 }
 
+.card:hover {
+    transition-duration: 0.1s;
+    transform: translate(0, -15px);
+}
+
+.active {
+    transform: translate(0, -15px);
+}
+
+.active::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    border-radius: 10px;
+    width: calc(100% - 6px);
+    height: 10px;
+}
 </style>

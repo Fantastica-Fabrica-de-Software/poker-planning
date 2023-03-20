@@ -2,23 +2,22 @@
   <c-light-mode>
     <div :key="member.id">
       <c-box
-        class="animate__animated animate__flipInX"
-        :class="member.hidden || 'animate__tada'"
-        backgroundColor="white"
+        :class="member.hidden ? '' : 'animate__animated animate__flipInY'"
+        backgroundColor="#FA6800"
         animationDuration="1s"
         w="90px"
         shadow="md"
         rounded="lg"
         p="5"
       >
-        <c-text paddingY="30px" fontSize="xl" fontWeight="bold" align="center">
-          <c-text style="color: white" v-if="member.hidden"> _ </c-text>
-          <c-text style="color: black" v-else>
+        <c-text paddingY="30px" fontSize="3xl" fontWeight="bold" align="center" style="color: white">
+          <c-text v-if="member.hidden"> ‎ </c-text>
+          <c-text v-else >
             {{ $store.getters.deck[member.card] }}
           </c-text>
         </c-text>
       </c-box>
-      <c-text marginTop="1em">
+      <c-text marginTop="1em" paddingX="5px" paddingY="3px" style="border-radius: 25px;" backgroundColor="#fff" >
         <i class="fa fa-user"></i>
         <span :class="member.id !== me.id || 'b'">
           {{ member.name }}
