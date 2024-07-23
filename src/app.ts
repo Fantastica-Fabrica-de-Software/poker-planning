@@ -24,8 +24,7 @@ const io = new Server(http, {
   allowEIO3: true
 })
 
-const { PORT } = process.env
-
+const PORT = 3000
 
 http.listen(PORT, () => {
     logger.info(`Server running on ${PORT}`)

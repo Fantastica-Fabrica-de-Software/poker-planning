@@ -1,35 +1,15 @@
-import Vue from "vue";
-// @ts-ignore
-import Chakra, {
-  CThemeProvider,
-  CReset,
-  CBox,
-} from "@chakra-ui/vue";
+import './assets/main.css'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { socketConnection } from './store'
 
-import App from "./App.vue";
-import VueRouter from "vue-router";
-import store from "./store";
-import "./styles.css"
+import App from './App.vue'
+import router from './router'
 
-import Index from "./routes/index.vue";
-import Room from "./routes/room.vue";
+const pinia = createPinia()
+const app = createApp(App)
 
-// Vue.config.productionTip = false
-Vue.use(VueRouter);
-Vue.use(Chakra);
-
-const routes = [
-  { name: "index", path: "/", component: Index },
-  { name: "room", path: "/r/:room", component: Room },
-];
-
-const router = new VueRouter({
-  mode: "history",
-  routes,
-});
-
-new Vue({
-  router,
-  store,
-  render: (h) => h(CThemeProvider, [h(CBox, [h(CReset), h(App)])]),
-}).$mount("#app");
+app.config.globalProperties.$socket = socketConnection
+app.use(pinia)
+app.use(router)
+app.mount('#app')
