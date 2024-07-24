@@ -1,7 +1,5 @@
 <template>
-  <c-box id="app">
     <router-view></router-view>
-  </c-box>
 </template>
 
 <script lang="ts">
@@ -9,20 +7,11 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "App",
-  inject: ["$chakraColorMode", "$toggleColorMode"],
   data: () => ({
     showBanner: process.env.VUE_APP_PROD_URL != null,
     prodUrl: process.env.VUE_APP_PROD_URL,
     showMoveBanner: process.env.VUE_APP_IS_HEROKU == "true",
   }),
-/*   methods: {
-    toggleMode: () => this.$toggleColorMode,
-  }, */
-  computed: {
-    colorMode() {
-      return this.$chakraColorMode();
-    },
-  },
 });
 </script>
 

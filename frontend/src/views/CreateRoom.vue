@@ -28,10 +28,9 @@ const router = useRouter()
 const roomNumber = ref('')
 
 const joinRoom = () => {
-  if (roomNumber.value === '') {
-    return
+  if (roomNumber.value !== '') {
+    return router.push({ name: 'Room', params: { room: roomNumber.value } })
   }
-  router.push({ name: 'room', params: { room: roomNumber.value } })
 }
 </script>
 

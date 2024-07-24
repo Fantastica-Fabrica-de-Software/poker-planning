@@ -1,98 +1,114 @@
 <template>
   <div id="room">
-    <!-- Modal -->
-    <div v-if="isOpen" class="modal" @click.self="closeModal">
-      <div class="modal-content">
-        <div class="modal-header">Welcome to {{ routeParams.room }}</div>
-        <div class="modal-body">
+    <modal :is-open="isOpen" @close="closeModal">
+      <modal-content ref="content">
+        <modal-header>Welcome to {{ roomName }}</modal-header>
+        <modal-body>
           <div class="form-control">
             <label class="form-label">Enter your name</label>
-            <input v-model="name" @change="changeName" placeholder="Enter your name" class="input" />
+            <input class="input" @change="changeName" placeholder="Enter your name" />
           </div>
-        </div>
-        <div class="modal-footer">
-          <button @click="closeModal" class="button">Join</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Header -->
+        </modal-body>
+        <modal-footer>
+          <button class="button" @click="closeModal">Join</button>
+        </modal-footer>
+      </modal-content>
+      <modal-overlay />
+    </modal>
     <header class="row spread">
-      <h1>{{ routeParams.room }}</h1>
-      <div class="header-right">
-        <button @click="openModal" class="button">Your Name</button>
-        <RoomSettings />
+      <h1 class="header-text">{{ roomName }}</h1>
+      <div class="button-container">
+        <button class="button" @click="openModal">Your Name</button>
+        <room-settings></room-settings>
       </div>
     </header>
-
-    <!-- Grid -->
     <div class="grid">
-      <div class="table">
+      <div class="grid-item table">
         <div class="row">
-          <TableCard v-for="member in membersOnTable" :key="member.id" :member="member" />
+          <table-card v-for="member in membersOnTable" :key="member.id" :member="member"></table-card>
         </div>
       </div>
-      <div class="watchers">
+      <div class="grid-item watchers">
         <ul class="rightFloat">
           <li v-if="watchers.length > 0">
-            <span><i class="fa fa-eye"></i>{{ ' ' }}{{ watchers.length }} Watching</span>
+            <span><i class="fa fa-eye"></i> {{ watchers.length }} Watching</span>
           </li>
-          <li v-for="member in members.filter((mem: { name: string }) => mem.name !== '')" :key="member.id">
-            <span :class="{ b: member.id !== me.id }">
+          <li v-for="member in filteredMembers" :key="member.id">
+            <span :class="{ b: member.id === me.id }">
               <i class="fa fa-user"></i>
-              <span v-if="member.name">{{ ' ' }}{{ member.name }}</span>
+              <span v-if="member.name"> {{ member.name }}</span>
               <span v-else> Anonymous</span>
             </span>
           </li>
         </ul>
       </div>
     </div>
-
-    <Hand v-if="onTable" />
+    <hand v-if="onTable" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useMainStore } from '@/store'
-import Hand from '@/components/Hand.vue'
-import RoomSettings from '@/components/RoomSettings.vue'
-import TableCard from '@/components/TableCard.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useMainStore, socketConnection } from '@/store';
 
-// Pinia store
-const store = useMainStore()
-
-// Route params
-const route = useRoute()
-const routeParams = route.params as { room: string }
-
-// Local state
-const isOpen = ref(true)
-const name = ref('')
-
-// Computed properties
-const me = computed(() => store.members.find((mem: { id: any }) => mem.id === store.$socket.id))
-const watchers = computed(() => store.members.filter((mem: { name: string }) => mem.name === ''))
-const membersOnTable = computed(() => store.members.filter((mem: { card: null }) => mem.card != null))
-const onTable = computed(() => me.value ? me.value.name !== '' : false)
-
-// Methods
-const changeName = () => {
-  if (name.value) {
-    store.$socket.emit('changeName', name.value)
-  }
+interface Member {
+  id: string;
+  name: string;
+  card?: any; // Replace 'any' with the appropriate type for 'card'
 }
+
+// Use the route to get the room parameter
+const route = useRoute();
+const roomName = ref(route.params.room);
+
+// Use the Pinia store
+const store = useMainStore();
+const isOpen = ref(true);
+
+onMounted(() => {
+  // Join the room
+  socketConnection.emit('join', roomName.value);
+
+  // Listen for room updates
+  socketConnection.on('roomUpdate', (room) => {
+    store.socket_pool(room);
+  });
+});
+
+// Cleanup socket listeners when the component is unmounted
+onUnmounted(() => {
+  socketConnection.off('roomUpdate');
+});
+
+// Computed properties to derive state from the store
+const me = computed(() => store.members.find((mem: Member) => mem.id === socketConnection.id));
+const watchers = computed(() => store.members.filter((mem: Member) => mem.name === ''));
+const membersOnTable = computed(() => store.members.filter((mem: Member) => mem.card != null));
+const filteredMembers = computed(() => store.members.filter((mem: Member) => mem.name !== ''));
+
+const onTable = computed(() => {
+  if (!me.value) {
+    return false;
+  }
+  return me.value.name !== '';
+});
+
+// Methods to handle user interactions
+const changeName = (event: Event) => {
+  const name = (event.target as HTMLInputElement).value;
+  socketConnection.emit('changeName', name);
+};
 
 const openModal = () => {
-  isOpen.value = true
-}
+  isOpen.value = true;
+};
 
 const closeModal = () => {
-  if (name.value) {
-    isOpen.value = false
+  if (me.value && me.value.name !== '') {
+    isOpen.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -109,7 +125,7 @@ li {
 
 .spread {
   margin-left: 5vw;
-  justify-content: space-between;
+  justify-content: space-between !important;
 }
 
 #room {
@@ -145,67 +161,28 @@ li {
   justify-content: space-around;
 }
 
-.modal {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+.header-text {
+  font-size: 2rem;
+  font-weight: bold;
 }
 
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-}
-
-.modal-header,
-.modal-body,
-.modal-footer {
-  padding: 10px;
-}
-
-.form-control {
-  margin-bottom: 1em;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5em;
-}
-
-.input {
-  width: 100%;
-  padding: 0.5em;
-  margin: 0.5em 0;
-  box-sizing: border-box;
+.button-container {
+  width: 300px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .button {
-  padding: 0.5em 1em;
-  margin: 0.5em;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  margin: 0 1rem;
 }
 
-.button:hover {
-  background-color: #0056b3;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.b {
-  font-weight: bold;
+.grid-item {
+  margin: 1.25rem 0;
 }
 </style>
