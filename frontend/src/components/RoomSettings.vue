@@ -8,7 +8,8 @@ const isOpen = ref(false)
 
 const changeDeck = (event: any) => {
   const newDeckIndex = event.target.value
-  store.changeDeck(newDeckIndex)
+  return newDeckIndex
+  // store.changeDeck(newDeckIndex)
 }
 
 const availableDecks = computed(() => store.availableDecks)

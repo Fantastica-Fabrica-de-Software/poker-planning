@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import { io } from 'socket.io-client'
 
-const socketConnection = io(import.meta.env.API_URL, {
+const socket = io(import.meta.env.API_URL, {
   withCredentials: false,
 })
 
@@ -29,4 +29,4 @@ export const useMainStore = defineStore('main', {
   },
 })
 
-export { socketConnection }
+export { socket }

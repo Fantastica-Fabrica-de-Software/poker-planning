@@ -1,32 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Card from '@/components/Card.vue'
-import { useMainStore } from '@/store'
+import { useMainStore, socket } from '@/store'
 
 const store = useMainStore()
 
 const me = computed(() => {
-  return store.members.find((mem) => mem.id == $socket.id)
+  return store.members.find((mem: any) => mem.id == socket.id)
 })
 
 const pickCard = (index: any) => {
-  $socket.emit('pickCard', index)
+  socket.emit('pickCard', index)
 }
 
 const pickUp = () => {
-  $socket.emit('pickCard', null)
+  socket.emit('pickCard', null)
 }
 
 const flipCard = () => {
-  $socket.emit('flipCard')
+  socket.emit('flipCard')
 }
 
 const flipAll = () => {
-  $socket.emit('flipAll')
+  socket.emit('flipAll')
 }
 
 const clearTable = () => {
-  $socket.emit('clearTable')
+  socket.emit('clearTable')
 }
 </script>
 

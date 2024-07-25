@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useMainStore, socketConnection } from '@/store';
+import { useMainStore, socket } from '@/store';
 
 interface Member {
   id: string;
@@ -68,21 +68,21 @@ const isOpen = ref(true);
 
 onMounted(() => {
   // Join the room
-  socketConnection.emit('join', roomName.value);
+  socket.emit('join', roomName.value);
 
   // Listen for room updates
-  socketConnection.on('roomUpdate', (room) => {
+  socket.on('roomUpdate', (room) => {
     store.socket_pool(room);
   });
 });
 
 // Cleanup socket listeners when the component is unmounted
 onUnmounted(() => {
-  socketConnection.off('roomUpdate');
+  socket.off('roomUpdate');
 });
 
 // Computed properties to derive state from the store
-const me = computed(() => store.members.find((mem: Member) => mem.id === socketConnection.id));
+const me = computed(() => store.members.find((mem: Member) => mem.id === socket.id));
 const watchers = computed(() => store.members.filter((mem: Member) => mem.name === ''));
 const membersOnTable = computed(() => store.members.filter((mem: Member) => mem.card != null));
 const filteredMembers = computed(() => store.members.filter((mem: Member) => mem.name !== ''));
@@ -97,7 +97,7 @@ const onTable = computed(() => {
 // Methods to handle user interactions
 const changeName = (event: Event) => {
   const name = (event.target as HTMLInputElement).value;
-  socketConnection.emit('changeName', name);
+  socket.emit('changeName', name);
 };
 
 const openModal = () => {
@@ -124,7 +124,6 @@ li {
 }
 
 .spread {
-  margin-left: 5vw;
   justify-content: space-between !important;
 }
 
@@ -167,7 +166,6 @@ li {
 }
 
 .button-container {
-  width: 300px;
   display: flex;
   justify-content: flex-end;
 }
