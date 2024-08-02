@@ -14,6 +14,11 @@ module.exports = {
   },
   rules: {
     'no-unused-vars': 'off',
-    'vue/multi-word-component-names': 'off'
+    'vue/multi-word-component-names': 'off',
+    'no-console': import.meta.env.VITE_APP_NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': import.meta.env.VITE_APP_NODE_ENV === 'production' ? 'warn' : 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn'
   },
 }
